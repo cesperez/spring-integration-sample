@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema attributeFormDefault="qualified"
+	elementFormDefault="qualified" targetNamespace="http://ws.apache.org/axis2"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sc="http://www.adictosaltrabajo.com/spring/ws/schemas/088">
+	<xsd:element name="cliente">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="ID"
+					type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="cuentaSaldo">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="cuenta"
+					type="xsd:string" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="saldo"
+					type="xsd:float" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="cuentas">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="0" maxOccurs="unbounded"
+					type="sc:cuentaSaldo" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

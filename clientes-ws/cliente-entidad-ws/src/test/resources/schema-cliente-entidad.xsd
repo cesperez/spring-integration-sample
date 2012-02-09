@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema attributeFormDefault="qualified"
+	elementFormDefault="qualified" targetNamespace="http://ws.apache.org/axis2"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:schemas="http://www.adictosaltrabajo.com/spring/ws/schemas">
+	<xsd:element name="usuario">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="NIF"
+					type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="clienteEntidad">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="codigoEntidad"
+					type="xsd:string" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="identificador"
+					type="xsd:string" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="respuesta">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="0" maxOccurs="unbounded"
+					type="schemas:clienteEntidad" />
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>
