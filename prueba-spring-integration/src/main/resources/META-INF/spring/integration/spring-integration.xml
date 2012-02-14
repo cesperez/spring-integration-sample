@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ws="http://www.springframework.org/schema/integration/ws"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:http="http://www.springframework.org/schema/integration/http"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-2.0.xsd http://www.springframework.org/schema/integration/ws http://www.springframework.org/schema/integration/ws/spring-integration-ws-2.0.xsd http://www.springframework.org/schema/integration/http http://www.springframework.org/schema/integration/http/spring-integration-http-2.0.xsd">
+
+	<context:component-scan base-package="com.autentia.spring.integration" />
+
+	<context:property-placeholder location="classpath:springIntegration.properties" />
+
+	<int:channel id="inputChanel" />
+
+	<ws:inbound-gateway id="wsInboundGateway"
+		request-channel="inputChanel" />
+	<int:service-activator input-channel="inputChanel"
+		ref="usuarioEndpoint" output-channel="idsUsuarioChannel" />
+
+	<int:channel id="idsUsuarioChannel" />
+
+	<ws:outbound-gateway id="idsUsuarioGateway"
+		request-channel="idsUsuarioChannel"
+		uri="http://${ws.usuarioentidad.host}:${ws.usuarioentidad.port}/${ws.usuarioentidad.context}"
+		marshaller="usuarioClienteEntidadMarshaller" reply-channel="clienteEntidadSplitterChannel" />
+
+	<bean id="usuarioClienteEntidadMarshaller"
+		class="com.autentia.spring.integration.prueba_spring_integration.UsuarioToClienteEntidadMarshaller" />
+
+
+	<int:channel id="clienteEntidadSplitterChannel" />
+	<int:splitter input-channel="clienteEntidadSplitterChannel"
+		output-channel="usuarioEntidadRouterChannel" ref="clienteEntidadSplitter" />
+
+
+	<int:channel id="usuarioEntidadRouterChannel" />
+	<int:recipient-list-router input-channel="usuarioEntidadRouterChannel">
+		<int:recipient channel="cuentasUsuario088"
+			selector-expression="payload.entidad.equals('088')" />
+		<int:recipient channel="cuentasUsuario767"
+			selector-expression="payload.entidad.equals('767')" />
+		<int:recipient channel="cuentasUsuario088"
+			selector-expression="payload.entidad.equals('955')" />
+	</int:recipient-list-router>
+
+
+	<int:channel id="cuentasUsuario088" />
+	<ws:outbound-gateway id="entidad088Gateway"
+		request-channel="cuentasUsuario088"
+		uri="http://${ws.entidad088.host}:${ws.entidad088.port}/${ws.entidad088.context}"
+		marshaller="entidad088Marshaller" reply-channel="aggregatorResponseChannel" />
+	<bean id="entidad088Marshaller"
+		class="com.autentia.spring.integration.prueba_spring_integration.Entidad088Marshaller" />
+
+
+
+	<int:channel id="cuentasUsuario767" />
+	<http:outbound-gateway request-channel="cuentasUsuario767"
+		reply-channel="aggregatorResponseChannel"
+		url="http://${rest.entidad767.host}:${rest.entidad767.port}/${rest.entidad767.context}/{usuario}"
+		http-method="GET" expected-response-type="java.lang.String" message-converters="entidad767Converter">
+		<http:uri-variable name="usuario" expression="payload.usuario"/>
+		</http:outbound-gateway>
+	
+
+	<!-- <int:channel id="cuentasUsuario955" /> TODO!! faltaria conectar con clase JAva -->
+
+
+	<int:channel id="aggregatorResponseChannel" />
+	<int:aggregator input-channel="aggregatorResponseChannel"
+		ref="cuentasAggregator" method="addCuentas" output-channel="cuentasResponseChannel" />
+
+	<int:channel id="cuentasResponseChannel" />
+	<int:service-activator input-channel="cuentasResponseChannel"
+		ref="cuentasResponseServiceActivator" />
+
+
+</beans>
