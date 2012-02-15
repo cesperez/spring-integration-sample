@@ -11,14 +11,16 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.spri
 
 	<context:property-placeholder location="classpath:springIntegration.properties" />
 
-	<int:channel id="inputChanel" />
+	<int:channel id="inputChannel" />		
 
 	<ws:inbound-gateway id="wsInboundGateway"
-		request-channel="inputChanel" />
-	<int:service-activator input-channel="inputChanel"
+		request-channel="inputChannel" />
+	<int:service-activator input-channel="inputChannel"
 		ref="usuarioEndpoint" output-channel="idsUsuarioChannel" />
 
 	<int:channel id="idsUsuarioChannel" />
+	<!-- Trazamos las peticiones en el fichero (ver log4j.xml) -->
+	<int:logging-channel-adapter id="loggingChannel" level="INFO" expression="'Received request with ' + payload" channel="idsUsuarioChannel"/>
 
 	<ws:outbound-gateway id="idsUsuarioGateway"
 		request-channel="idsUsuarioChannel"
@@ -40,11 +42,11 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.spri
 			selector-expression="payload.entidad.equals('088')" />
 		<int:recipient channel="cuentasUsuario767"
 			selector-expression="payload.entidad.equals('767')" />
-		<int:recipient channel="cuentasUsuario088"
+		<int:recipient channel="cuentasUsuario955"
 			selector-expression="payload.entidad.equals('955')" />
 	</int:recipient-list-router>
 
-
+	<!-- Conecta con el Servicio WEB que devuelve las cuentas de los clientes de la entidad 088 -->
 	<int:channel id="cuentasUsuario088" />
 	<ws:outbound-gateway id="entidad088Gateway"
 		request-channel="cuentasUsuario088"
@@ -54,17 +56,24 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.spri
 		class="com.autentia.spring.integration.prueba_spring_integration.Entidad088Marshaller" />
 
 
-
+	<!-- Conecta con el servicio REST que devuelve las cuentas de los clientes de la entidad 767 -->
 	<int:channel id="cuentasUsuario767" />
 	<http:outbound-gateway request-channel="cuentasUsuario767"
 		reply-channel="aggregatorResponseChannel"
 		url="http://${rest.entidad767.host}:${rest.entidad767.port}/${rest.entidad767.context}/{usuario}"
-		http-method="GET" expected-response-type="java.lang.String" message-converters="entidad767Converter">
-		<http:uri-variable name="usuario" expression="payload.usuario"/>
-		</http:outbound-gateway>
-	
+		http-method="GET" expected-response-type="java.lang.String"
+		message-converters="entidad767Converter">
+		<http:uri-variable name="usuario" expression="payload.usuario" />
+	</http:outbound-gateway>
 
-	<!-- <int:channel id="cuentasUsuario955" /> TODO!! faltaria conectar con clase JAva -->
+	<!-- Conecta con la clase java que devuelve las cuentas de los clientes de la entidad 955 -->
+	<int:channel id="cuentasUsuario955" />
+	<int:service-activator input-channel="cuentasUsuario955"
+		ref="cuentasCliente955ServiceActivator" output-channel="aggregatorResponseChannel" />
+	<bean id="cuentasCliente955ServiceActivator"
+		class="com.autentia.spring.integration.prueba_spring_integration.CuentasCliente955ServiceActivator">
+		<constructor-arg name="cuentasService" ref="cuentasCliente955" />
+	</bean>
 
 
 	<int:channel id="aggregatorResponseChannel" />
