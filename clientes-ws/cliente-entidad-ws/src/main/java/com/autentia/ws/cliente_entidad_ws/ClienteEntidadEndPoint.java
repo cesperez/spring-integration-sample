@@ -24,6 +24,8 @@ public class ClienteEntidadEndPoint {
 	private final Namespace namespace;
 
 	public ClienteEntidadEndPoint() throws JDOMException {
+		
+		LOG.trace("COnstructor de ClienteEntidadEndpoint");
 		this.namespace = Namespace.getNamespace("schemas", NAMESPACE_URI);
 		this.NIFExpression = XPath.newInstance("//schemas:NIF");
 		NIFExpression.addNamespace(namespace);

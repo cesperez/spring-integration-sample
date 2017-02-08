@@ -14,4 +14,14 @@
 		<sws:xsd location="/WEB-INF/schema-cliente-entidad.xsd" />
 	</sws:dynamic-wsdl>
 
+	<bean id="clienteEntidadWsdl" class="org.springframework.ws.wsdl.wsdl11.DefaultWsdl11Definition">
+		<property name="schema" ref="schema" />
+		<property name="portTypeName" value="ClienteEntidadResource" />
+		<property name="locationUri" value="/clienteEntidadService/" />
+		<property name="targetNamespace" value="http://www.adictosaltrabajo.com/spring/ws/schemas" />
+	</bean>
+	<bean id="schema" class="org.springframework.xml.xsd.SimpleXsdSchema">
+    	<property name="xsd" value="/WEB-INF/schema-cliente-entidad.xsd"/>
+	</bean>
+
 </beans>

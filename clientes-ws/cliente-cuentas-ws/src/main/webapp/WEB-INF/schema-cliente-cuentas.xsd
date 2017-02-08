@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema attributeFormDefault="qualified"
-	elementFormDefault="qualified" targetNamespace="http://ws.apache.org/axis2"
+	elementFormDefault="qualified" targetNamespace="http://www.adictosaltrabajo.com/spring/ws/schemas/088"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sc="http://www.adictosaltrabajo.com/spring/ws/schemas/088">
 	<xsd:element name="cliente">
 		<xsd:complexType>
@@ -25,8 +25,7 @@
 	<xsd:element name="cuentas">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element minOccurs="0" maxOccurs="unbounded"
-					type="sc:cuentaSaldo" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" ref="sc:cuentaSaldo" />
 			</xsd:sequence>
 		</xsd:complexType>
 	</xsd:element>
